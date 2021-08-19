@@ -5,23 +5,19 @@ const createQueue = (queueName) => {
     redis: {
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
-      db: process.env.REDIS_DB,
-      options: { password: process.env.REDIS_PASSWORD },
+      auth_pass: process.env.REDIS_PASSWORD,
     },
-    removeOnSuccess: true,
   };
 
   return new Queue(queueName, queueConfig);
 };
 
-const createJob = (queue, jobData, job) => {
+const createJob = (queue, jobData) => {
   const job = queue.createJob(jobData);
 
   job.retries(process.env.JOBS_RETRIES).save();
 
-  job.on("succeeded", () => {
-    console.log(`Email's job with id ${job.id} sended.`);
-  });
+  return job;
 };
 
 module.exports = { createQueue, createJob };
